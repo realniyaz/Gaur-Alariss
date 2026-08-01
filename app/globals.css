@@ -1,26 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+
+  /* Peacock Royal Blue & Luxury Gold Palette */
+  --color-peacock-dark: #061826;     /* Deep royal peacock night */
+  --color-peacock-blue: #0b3c5d;     /* Rich royal blue */
+  --color-peacock-bright: #1d5f8a;   /* Vibrant sapphire accent */
+  
+  --color-gold-light: #dfc184;       /* Champagne gold */
+  --color-gold-base: #c5a059;        /* Classic metallic gold */
+  --color-gold-dark: #9a7b3c;        /* Deep antique gold */
+  
+  --color-cream-bg: #fbf9f5;         /* Off-white luxury background */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream-bg);
+  color: var(--color-peacock-dark);
+  overflow-x: hidden;
 }
