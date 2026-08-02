@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Lock, ArrowRight, CheckCircle2, X, ShieldAlert } from "lucide-react";
+import { Sparkles, Lock, ArrowRight, X, Loader2 } from "lucide-react";
 
 const floorplansData = [
   {
@@ -12,7 +13,7 @@ const floorplansData = [
     size: "1,550 Sq. Ft.",
     price: "₹1.36 Cr* Onwards",
     config: "3 Bedrooms + 3 Bathrooms + Wide Deck Balconies",
-    image: "/3BHK.jpg", // Replace with actual 3 BHK floorplan image path if available
+    image: "/3BHK.jpg",
     tag: "Most Popular",
   },
   {
@@ -21,27 +22,47 @@ const floorplansData = [
     size: "1,950 Sq. Ft.",
     price: "₹1.71 Cr* Onwards",
     config: "4 Bedrooms + 4 Bathrooms + Servant Room + Private Lobby",
-    image: "/4BHK.jpg", // Replace with actual 4 BHK floorplan image path if available
+    image: "/4BHK.jpg",
     tag: "Exclusive",
   },
 ];
 
 export default function Floorplans() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<0 | 1>(0); // 0 for 3 BHK, 1 for 4 BHK
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) return;
-    setIsSubmitted(true);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, planType: `Floor Plan: ${selectedPlan}` }),
+      });
+
+      if (res.ok) {
+        router.push("/thank-you");
+      } else {
+        alert("Something went wrong. Please try again.");
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const handleOpenModal = (planTitle: string) => {
     setSelectedPlan(planTitle);
-    setIsSubmitted(false);
+    setIsLoading(false);
     setFormData({ name: "", phone: "", email: "" });
     setIsModalOpen(true);
   };
@@ -70,7 +91,7 @@ export default function Floorplans() {
             Thoughtfully engineered spaces maximizing cross-ventilation, privacy, and majestic vistas.
           </p>
 
-          {/* Tab Navigation (Works seamlessly across mobile & desktop) */}
+          {/* Tab Navigation */}
           <div className="flex items-center justify-center gap-3 mt-8">
             {floorplansData.map((plan, idx) => (
               <button
@@ -140,7 +161,6 @@ export default function Floorplans() {
               {/* Right Column: Protected Blurred Image with Animated Lock Overlay */}
               <div className="lg:col-span-7 relative aspect-[4/3] rounded-2xl overflow-hidden bg-peacock-dark border border-gold-base/30 shadow-inner group">
                 
-                {/* Blurred Blueprint Image */}
                 <Image
                   src={floorplansData[activeTab].image}
                   alt={floorplansData[activeTab].title}
@@ -148,10 +168,8 @@ export default function Floorplans() {
                   className="object-contain filter blur-[3px] opacity-80 group-hover:scale-105 transition-transform duration-700"
                 />
 
-                {/* Dark Vignette Overlay */}
                 <div className="absolute inset-0 bg-peacock-dark/30" />
 
-                {/* Animated Locked Badge Overlay */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
                   <motion.div
                     animate={{ y: [0, -6, 0] }}
@@ -204,72 +222,64 @@ export default function Floorplans() {
                 <X className="w-5 h-5" />
               </button>
 
-              {isSubmitted ? (
-                <div className="py-8 text-center space-y-3">
-                  <CheckCircle2 className="w-12 h-12 text-gold-base mx-auto animate-bounce" />
-                  <h3 className="text-2xl font-serif text-peacock-dark">Blueprint Unlocked</h3>
-                  <p className="text-sm text-peacock-dark/70 font-sans">
-                    Thank you. The high-resolution blueprint for <strong className="text-peacock-dark">{selectedPlan}</strong> has been sent along with the cost sheet.
-                  </p>
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="mt-4 px-6 py-2.5 rounded-xl bg-peacock-dark text-gold-light text-xs font-sans uppercase tracking-wider cursor-pointer font-bold"
-                  >
-                    Close Window
-                  </button>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="text-center mb-6">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gold-dark font-sans font-semibold">
+                    Gaur Alaris Blueprints
+                  </span>
+                  <h3 className="text-2xl font-serif text-peacock-dark mt-1">Unlock {selectedPlan}</h3>
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="text-center mb-6">
-                    <span className="text-xs uppercase tracking-[0.3em] text-gold-dark font-sans font-semibold">
-                      Gaur Alaris Blueprints
-                    </span>
-                    <h3 className="text-2xl font-serif text-peacock-dark mt-1">Unlock {selectedPlan}</h3>
-                  </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Enter your name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter your name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+91 Enter your number"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+91 Enter your number"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans"
-                  >
-                    Instant Unlock Blueprint
-                  </button>
-                </form>
-              )}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Unlocking...</span>
+                    </>
+                  ) : (
+                    <span>Instant Unlock Blueprint</span>
+                  )}
+                </button>
+              </form>
             </motion.div>
           </motion.div>
         )}

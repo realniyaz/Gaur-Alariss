@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowRight, CheckCircle2, X } from "lucide-react";
+import { Sparkles, ArrowRight, X, Loader2 } from "lucide-react";
 
 const highlightItems = [
   {
@@ -44,15 +45,35 @@ const galleryImages = [
 ];
 
 export default function Highlights() {
+  const router = useRouter();
   const [activeMobileIdx, setActiveMobileIdx] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) return;
-    setIsSubmitted(true);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, planType: "Highlights Priority Access Enquiry" }),
+      });
+
+      if (res.ok) {
+        router.push("/thank-you");
+      } else {
+        alert("Something went wrong. Please try again.");
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const scrollToSection = (id: string) => {
@@ -93,7 +114,7 @@ export default function Highlights() {
         {/* ========================================================= */}
         <div className="hidden lg:grid grid-cols-12 gap-12 items-center mb-16">
           
-          {/* Left Side: Sequential Pointers (Clean & Balanced) */}
+          {/* Left Side: Sequential Pointers */}
           <div className="col-span-7 space-y-3.5">
             {highlightItems.map((item, idx) => (
               <motion.div
@@ -114,7 +135,7 @@ export default function Highlights() {
             ))}
           </div>
 
-          {/* Right Side: 4-Image Gallery Grid (Balanced Height) */}
+          {/* Right Side: 4-Image Gallery Grid */}
           <div className="col-span-5 grid grid-cols-2 gap-4">
             {galleryImages.map((img, idx) => (
               <motion.div
@@ -146,7 +167,6 @@ export default function Highlights() {
         {/* ========================================================= */}
         <div className="block lg:hidden space-y-6 mb-12">
           
-          {/* Active Highlight Card Display */}
           <motion.div
             key={activeMobileIdx}
             initial={{ opacity: 0, y: 10 }}
@@ -165,7 +185,6 @@ export default function Highlights() {
             </h3>
           </motion.div>
 
-          {/* Quick Select Dots / Numbers */}
           <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2">
             {highlightItems.map((item, idx) => (
               <button
@@ -182,7 +201,6 @@ export default function Highlights() {
             ))}
           </div>
 
-          {/* Mobile Gallery Carousel Preview */}
           <div className="grid grid-cols-2 gap-3 pt-2">
             {galleryImages.map((img, idx) => (
               <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-lg border border-gold-base/30">
@@ -207,7 +225,6 @@ export default function Highlights() {
           transition={{ duration: 0.6 }}
           className="pt-8 border-t border-gold-base/30 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
         >
-          {/* Button 1: Redirects to Amenities Section */}
           <button
             onClick={() => scrollToSection("clubhouse")}
             className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-peacock-blue/60 hover:bg-peacock-blue border border-gold-base/40 text-cream-bg font-bold text-xs tracking-[0.2em] uppercase shadow-lg transition-all cursor-pointer font-sans flex items-center justify-center gap-3 group"
@@ -216,10 +233,9 @@ export default function Highlights() {
             <ArrowRight className="w-4 h-4 text-gold-light group-hover:translate-x-1 transition-transform" />
           </button>
 
-          {/* Button 2: Opens Enquire Form Modal */}
           <button
             onClick={() => {
-              setIsSubmitted(false);
+              setIsLoading(false);
               setFormData({ name: "", phone: "", email: "" });
               setIsModalOpen(true);
             }}
@@ -251,7 +267,6 @@ export default function Highlights() {
               onClick={(e) => e.stopPropagation()}
               className="bg-cream-bg text-peacock-dark p-6 sm:p-8 rounded-3xl shadow-2xl border border-gold-base/50 w-full max-w-md relative"
             >
-              {/* Close Button */}
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="absolute top-4 right-4 p-2 rounded-full bg-peacock-dark/5 text-peacock-dark hover:bg-peacock-dark/10 transition-colors cursor-pointer"
@@ -260,72 +275,64 @@ export default function Highlights() {
                 <X className="w-5 h-5" />
               </button>
 
-              {isSubmitted ? (
-                <div className="py-8 text-center space-y-3">
-                  <CheckCircle2 className="w-12 h-12 text-gold-base mx-auto animate-bounce" />
-                  <h3 className="text-2xl font-serif text-peacock-dark">Enquiry Received</h3>
-                  <p className="text-sm text-peacock-dark/70 font-sans">
-                    Thank you. Our luxury property advisor will get in touch with you shortly.
-                  </p>
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="mt-4 px-6 py-2.5 rounded-xl bg-peacock-dark text-gold-light text-xs font-sans uppercase tracking-wider cursor-pointer font-bold"
-                  >
-                    Close Window
-                  </button>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="text-center mb-6">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gold-dark font-sans font-semibold">
+                    Gaur Alaris Advisory
+                  </span>
+                  <h3 className="text-2xl font-serif text-peacock-dark mt-1">Request Priority Access</h3>
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="text-center mb-6">
-                    <span className="text-xs uppercase tracking-[0.3em] text-gold-dark font-sans font-semibold">
-                      Gaur Alaris Advisory
-                    </span>
-                    <h3 className="text-2xl font-serif text-peacock-dark mt-1">Request Priority Access</h3>
-                  </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Enter your name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter your name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+91 Enter your number"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+91 Enter your number"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans"
-                  >
-                    Submit Enquiry
-                  </button>
-                </form>
-              )}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <span>Submit Enquiry</span>
+                  )}
+                </button>
+              </form>
             </motion.div>
           </motion.div>
         )}

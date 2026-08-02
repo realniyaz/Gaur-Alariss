@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Building2, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Sparkles, Building2, MapPin, ArrowRight, Loader2 } from "lucide-react";
 
 const banners = ["/banner_1.png", "/banner1.png", "/banner2.png", "/banner3.png"];
 
 export default function Hero() {
+  const router = useRouter();
   const [currentBanner, setCurrentBanner] = useState(0);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Cinematic background slideshow every 6 seconds
   useEffect(() => {
@@ -19,10 +21,29 @@ export default function Hero() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) return;
-    setIsSubmitted(true);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, planType: "Hero Section Cost Sheet Enquiry" }),
+      });
+
+      if (res.ok) {
+        router.push("/thank-you");
+      } else {
+        alert("Something went wrong. Please try again.");
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const scrollToSection = (id: string) => {
@@ -107,85 +128,76 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right Column: Contact Form (Solid Cream Style) */}
+        {/* Right Column: Contact Form */}
         <div className="col-span-5 bg-cream-bg text-peacock-dark p-6 rounded-2xl shadow-2xl border border-gold-base/50">
-          {isSubmitted ? (
-            <div className="py-8 text-center space-y-3">
-              <CheckCircle2 className="w-12 h-12 text-gold-base mx-auto animate-bounce" />
-              <h3 className="text-2xl font-serif text-peacock-dark">Enquiry Registered</h3>
-              <p className="text-xs text-peacock-dark/70 font-sans">
-                Our luxury property advisor will connect with you shortly with the official cost sheet.
-              </p>
-              <button
-                onClick={() => setIsSubmitted(false)}
-                className="mt-3 px-5 py-2 rounded-lg bg-peacock-dark text-gold-light text-xs font-sans uppercase tracking-wider cursor-pointer"
-              >
-                Send Another
-              </button>
+          <form onSubmit={handleSubmit} className="space-y-3.5">
+            <div className="text-center mb-4">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-gold-base font-sans font-semibold">
+                Priority Access Desk
+              </span>
+              <h3 className="text-xl font-serif text-peacock-dark mt-0.5">Request Official Cost Sheet</h3>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-3.5">
-              <div className="text-center mb-4">
-                <span className="text-[10px] uppercase tracking-[0.3em] text-gold-base font-sans font-semibold">
-                  Priority Access Desk
-                </span>
-                <h3 className="text-xl font-serif text-peacock-dark mt-0.5">Request Official Cost Sheet</h3>
-              </div>
 
-              <div>
-                <label className="block text-[10px] uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-white border border-gold-base/30 rounded-xl px-3.5 py-2.5 text-xs text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                />
-              </div>
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full bg-white border border-gold-base/30 rounded-xl px-3.5 py-2.5 text-xs text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+              />
+            </div>
 
-              <div>
-                <label className="block text-[10px] uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-white border border-gold-base/30 rounded-xl px-3.5 py-2.5 text-xs text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                />
-              </div>
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full bg-white border border-gold-base/30 rounded-xl px-3.5 py-2.5 text-xs text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+              />
+            </div>
 
-              <div>
-                <label className="block text-[10px] uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
-                <input
-                  type="tel"
-                  required
-                  placeholder="+91 Enter your number"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full bg-white border border-gold-base/30 rounded-xl px-3.5 py-2.5 text-xs text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                />
-              </div>
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
+              <input
+                type="tel"
+                required
+                placeholder="+91 Enter your number"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="w-full bg-white border border-gold-base/30 rounded-xl px-3.5 py-2.5 text-xs text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+              />
+            </div>
 
-              <button
-                type="submit"
-                className="w-full py-3 mt-1 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans"
-              >
-                Get Instant Details
-              </button>
-            </form>
-          )}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 mt-1 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <span>Get Instant Details</span>
+              )}
+            </button>
+          </form>
         </div>
 
       </div>
 
 
       {/* ========================================================= */}
-      {/* 3. MOBILE & TABLET VIEW: Transparent Cards + Solid Cream Form */}
+      {/* 3. MOBILE & TABLET VIEW */}
       {/* ========================================================= */}
       <div className="block lg:hidden relative z-10 w-full flex flex-col justify-between h-full pt-2 min-h-[82vh]">
         
-        {/* Top Branding */}
         <div className="text-center space-y-1.5 px-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-peacock-dark/40 border border-gold-base/40 shadow-sm backdrop-blur-md">
             <Sparkles className="w-3 h-3 text-gold-light" />
@@ -198,13 +210,10 @@ export default function Hero() {
           </h1>
         </div>
 
-        {/* Middle Area transparent for full image display */}
         <div className="flex-1 my-auto" />
 
-        {/* Bottom Transparent Cards + Solid Cream Contact Form */}
         <div className="space-y-3 mt-auto">
           
-          {/* Two Transparent Mobile Summary Cards (See-through) */}
           <div className="grid grid-cols-2 gap-2.5">
             <div className="p-2.5 rounded-xl bg-peacock-dark/30 border border-gold-base/40 text-center shadow-lg backdrop-blur-md">
               <span className="block text-[8px] uppercase tracking-wider text-gold-light font-sans">Architecture</span>
@@ -216,68 +225,59 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Contact Form (Solid Cream Style) */}
           <div className="bg-cream-bg text-peacock-dark p-4 rounded-2xl shadow-2xl border border-gold-base/50">
-            {isSubmitted ? (
-              <div className="py-4 text-center space-y-2">
-                <CheckCircle2 className="w-8 h-8 text-gold-base mx-auto animate-bounce" />
-                <h3 className="text-lg font-serif text-peacock-dark">Enquiry Registered</h3>
-                <p className="text-xs text-peacock-dark/70 font-sans">
-                  Our luxury advisor will connect with you shortly.
-                </p>
-                <button
-                  onClick={() => setIsSubmitted(false)}
-                  className="mt-1 px-3 py-1.5 rounded-lg bg-peacock-dark text-gold-light text-[10px] uppercase tracking-wider cursor-pointer"
-                >
-                  Send Another
-                </button>
+            <form onSubmit={handleSubmit} className="space-y-2.5">
+              <div className="text-center mb-2">
+                <span className="text-[9px] uppercase tracking-[0.25em] text-gold-base font-sans font-semibold">
+                  Priority Access
+                </span>
+                <h3 className="text-base font-serif text-peacock-dark">Request Cost Sheet</h3>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-2.5">
-                <div className="text-center mb-2">
-                  <span className="text-[9px] uppercase tracking-[0.25em] text-gold-base font-sans font-semibold">
-                    Priority Access
-                  </span>
-                  <h3 className="text-base font-serif text-peacock-dark">Request Cost Sheet</h3>
-                </div>
 
-                <div>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Full Name *"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-white border border-gold-base/30 rounded-lg px-3 py-2 text-xs text-peacock-dark placeholder-peacock-dark/40 focus:outline-none focus:border-gold-base transition-all"
-                  />
-                </div>
+              <div>
+                <input
+                  type="text"
+                  required
+                  placeholder="Full Name *"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full bg-white border border-gold-base/30 rounded-lg px-3 py-2 text-xs text-peacock-dark placeholder-peacock-dark/40 focus:outline-none focus:border-gold-base transition-all"
+                />
+              </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="email"
-                    placeholder="Email Address"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-white border border-gold-base/30 rounded-lg px-3 py-2 text-xs text-peacock-dark placeholder-peacock-dark/40 focus:outline-none focus:border-gold-base transition-all"
-                  />
-                  <input
-                    type="tel"
-                    required
-                    placeholder="Phone Number *"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-white border border-gold-base/30 rounded-lg px-3 py-2 text-xs text-peacock-dark placeholder-peacock-dark/40 focus:outline-none focus:border-gold-base transition-all"
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full bg-white border border-gold-base/30 rounded-lg px-3 py-2 text-xs text-peacock-dark placeholder-peacock-dark/40 focus:outline-none focus:border-gold-base transition-all"
+                />
+                <input
+                  type="tel"
+                  required
+                  placeholder="Phone Number *"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full bg-white border border-gold-base/30 rounded-lg px-3 py-2 text-xs text-peacock-dark placeholder-peacock-dark/40 focus:outline-none focus:border-gold-base transition-all"
+                />
+              </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-2.5 rounded-lg bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-[11px] tracking-[0.15em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans"
-                >
-                  Get Instant Details
-                </button>
-              </form>
-            )}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-2.5 rounded-lg bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-[11px] tracking-[0.15em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <span>Get Instant Details</span>
+                )}
+              </button>
+            </form>
           </div>
 
         </div>

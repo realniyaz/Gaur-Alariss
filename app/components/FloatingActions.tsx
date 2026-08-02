@@ -1,23 +1,44 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, MessageSquare, FileText, X, CheckCircle2 } from "lucide-react";
+import { Phone, MessageSquare, FileText, X, Loader2 } from "lucide-react";
 
 export default function FloatingActions() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) return;
-    setIsSubmitted(true);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, planType: "Floating Actions Enquiry" }),
+      });
+
+      if (res.ok) {
+        router.push("/thank-you");
+      } else {
+        alert("Something went wrong. Please try again.");
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const openEnquiryModal = () => {
-    setIsSubmitted(false);
+    setIsLoading(false);
     setFormData({ name: "", phone: "", email: "" });
     setIsModalOpen(true);
   };
@@ -25,7 +46,7 @@ export default function FloatingActions() {
   return (
     <>
       {/* ========================================================= */}
-      {/* DESKTOP VIEW: Bottom-Left Corner Vertical Stack */}
+      {/* DESKTOP VIEW: Bottom-Right Corner Vertical Stack */}
       {/* ========================================================= */}
       <div className="hidden lg:flex fixed bottom-6 right-6 z-40 flex-col gap-3.5 items-center">
         
@@ -36,12 +57,12 @@ export default function FloatingActions() {
           className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-peacock-dark border-2 border-gold-base shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer"
         >
           <Phone className="w-5 h-5 text-gold-light" />
-          <span className="absolute left-14 px-3 py-1 bg-peacock-dark text-gold-light text-xs font-sans rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-gold-base/40 pointer-events-none">
+          <span className="absolute right-14 px-3 py-1 bg-peacock-dark text-gold-light text-xs font-sans rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-gold-base/40 pointer-events-none">
             +91 99103 74156
           </span>
         </a>
 
-        {/* WhatsApp Action (using /wh.png) */}
+        {/* WhatsApp Action */}
         <a
           href="https://wa.me/917042080055"
           target="_blank"
@@ -52,7 +73,7 @@ export default function FloatingActions() {
           <div className="relative w-6 h-6">
             <Image src="/wh.png" alt="WhatsApp" fill className="object-contain" />
           </div>
-          <span className="absolute left-14 px-3 py-1 bg-peacock-dark text-gold-light text-xs font-sans rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-gold-base/40 pointer-events-none">
+          <span className="absolute right-14 px-3 py-1 bg-peacock-dark text-gold-light text-xs font-sans rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-gold-base/40 pointer-events-none">
             WhatsApp Us
           </span>
         </a>
@@ -64,7 +85,7 @@ export default function FloatingActions() {
           className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-gold-light via-gold-base to-gold-dark border-2 border-peacock-dark shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer"
         >
           <FileText className="w-5 h-5 text-peacock-dark" />
-          <span className="absolute left-14 px-3 py-1 bg-peacock-dark text-gold-light text-xs font-sans rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-gold-base/40 pointer-events-none">
+          <span className="absolute right-14 px-3 py-1 bg-peacock-dark text-gold-light text-xs font-sans rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-gold-base/40 pointer-events-none">
             Enquire Now
           </span>
         </button>
@@ -139,72 +160,64 @@ export default function FloatingActions() {
                 <X className="w-5 h-5" />
               </button>
 
-              {isSubmitted ? (
-                <div className="py-8 text-center space-y-3">
-                  <CheckCircle2 className="w-12 h-12 text-gold-base mx-auto animate-bounce" />
-                  <h3 className="text-2xl font-serif text-peacock-dark">Enquiry Received</h3>
-                  <p className="text-sm text-peacock-dark/70 font-sans">
-                    Thank you. Our luxury property advisor will get in touch with you shortly.
-                  </p>
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="mt-4 px-6 py-2.5 rounded-xl bg-peacock-dark text-gold-light text-xs font-sans uppercase tracking-wider cursor-pointer font-bold"
-                  >
-                    Close Window
-                  </button>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="text-center mb-6">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gold-dark font-sans font-semibold">
+                    Gaur Alaris Priority Desk
+                  </span>
+                  <h3 className="text-2xl font-serif text-peacock-dark mt-1">Schedule a Consultation</h3>
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="text-center mb-6">
-                    <span className="text-xs uppercase tracking-[0.3em] text-gold-dark font-sans font-semibold">
-                      Gaur Alaris Priority Desk
-                    </span>
-                    <h3 className="text-2xl font-serif text-peacock-dark mt-1">Schedule a Consultation</h3>
-                  </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Enter your name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter your name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+91 Enter your number"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Phone Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+91 Enter your number"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-peacock-dark/70 mb-1 font-sans">Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-white border border-gold-base/30 rounded-xl px-4 py-2.5 text-sm text-peacock-dark placeholder-peacock-dark/30 focus:outline-none focus:border-gold-base transition-all"
+                  />
+                </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans"
-                  >
-                    Submit Enquiry
-                  </button>
-                </form>
-              )}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:opacity-95 transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <span>Submit Enquiry</span>
+                  )}
+                </button>
+              </form>
             </motion.div>
           </motion.div>
         )}
