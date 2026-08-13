@@ -118,16 +118,16 @@ export default function FloatingActions() {
 
         {/* WhatsApp */}
         <a
-          href="https://wa.me/917042080055"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 flex flex-col items-center justify-center py-1 text-emerald-400 hover:text-emerald-300 transition-colors border-l border-gold-base/20"
-        >
-          <div className="relative w-4 h-4 mb-0.5">
-            <Image src="/wh.png" alt="WhatsApp" fill className="object-contain" />
-          </div>
-          <span className="text-[10px] uppercase tracking-wider font-sans font-bold">WhatsApp</span>
-        </a>
+  href="https://wa.me/917042080055/?text=Hi,%20I%20would%20like%20to%20know%20more%20about%20Gaur%20Alaris%20project"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex-1 flex flex-col items-center justify-center py-1 text-emerald-400 hover:text-emerald-300 transition-colors border-l border-gold-base/20"
+>
+  <div className="relative w-4 h-4 mb-0.5">
+    <Image src="/wh.png" alt="WhatsApp" fill className="object-contain" />
+  </div>
+  <span className="text-[10px] uppercase tracking-wider font-sans font-bold">WhatsApp</span>
+</a>
 
       </div>
 
