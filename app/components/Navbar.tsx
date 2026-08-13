@@ -94,7 +94,7 @@ export default function Navbar() {
 
           {/* WhatsApp CTA Button */}
           <a
-            href="https://wa.me/917042080055/?text=Hi,%20I%20would%20like%20to%20know%20more%20about%20Gaur%20Alaris%20project"
+            href="https://wa.me/917042080055/?text=Hi! 👋 I would like to know more about the Gaur Alaris  Sec 22 D project. Please share the latest price, available unit options, and complete project details."
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/40 transition-all text-xs font-sans font-semibold text-[#075E54]"

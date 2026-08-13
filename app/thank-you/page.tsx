@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import Script from "next/script";
 import { CheckCircle2, ArrowLeft, Phone, Sparkles } from "lucide-react";
 
 export default function ThankYouPage() {
@@ -16,9 +18,22 @@ export default function ThankYouPage() {
     return () => clearTimeout(timer);
   }, [router]);
 
+  const whatsappMessage = encodeURIComponent(
+    "Hi! 👋 I would like to know more about the Gaur Alaris Sec 22 D project. Please share the latest price, available unit options, and complete project details."
+  );
+
   return (
     <main className="relative w-full min-h-screen bg-cream-bg text-peacock-dark flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
       
+      {/* Google Ads Conversion Event Snippet with Window Safety Check */}
+      <Script id="google-conversion-snippet" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('event', 'conversion', {'send_to': 'AW-18243414829/S1AyCPOR0sAcEK3WkftD'});
+        `}
+      </Script>
+
       {/* Decorative Glow Elements */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold-base/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -49,6 +64,30 @@ export default function ThankYouPage() {
 
         {/* Action Buttons */}
         <div className="pt-4 space-y-3">
+          
+          {/* Call Advisor */}
+          <a
+            href="tel:+919910374156"
+            className="w-full py-3 rounded-xl bg-peacock-dark text-gold-light font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:bg-peacock-blue transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
+          >
+            <Phone className="w-4 h-4" />
+            <span>Call Advisor Now</span>
+          </a>
+
+          {/* WhatsApp Direct Chat */}
+          <a
+            href={`https://wa.me/917042080055?text=${whatsappMessage}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tracking-[0.2em] uppercase shadow-md transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
+          >
+            <div className="relative w-4 h-4">
+              <Image src="/wh.png" alt="WhatsApp" fill className="object-contain" />
+            </div>
+            <span>Chat on WhatsApp</span>
+          </a>
+
+          {/* Return to Website */}
           <Link
             href="/"
             className="w-full py-3.5 rounded-xl bg-gradient-to-r from-gold-light via-gold-base to-gold-dark text-peacock-dark font-bold text-xs tracking-[0.2em] uppercase shadow-lg hover:opacity-95 transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
@@ -57,13 +96,6 @@ export default function ThankYouPage() {
             <span>Return to Website</span>
           </Link>
 
-          <a
-            href="tel:+919910374156"
-            className="w-full py-3 rounded-xl bg-peacock-dark text-gold-light font-bold text-xs tracking-[0.2em] uppercase shadow-md hover:bg-peacock-blue transition-all cursor-pointer font-sans flex items-center justify-center gap-2"
-          >
-            <Phone className="w-4 h-4" />
-            <span>Call Advisor Now</span>
-          </a>
         </div>
 
         <div className="text-[10px] text-peacock-dark/50 font-sans">
