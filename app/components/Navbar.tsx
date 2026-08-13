@@ -94,7 +94,7 @@ export default function Navbar() {
 
           {/* WhatsApp CTA Button */}
           <a
-            href="https://wa.me/917042080055/?text=Hi! 👋 I would like to know more about the Gaur Alaris  Sec 22 D project. Please share the latest price, available unit options, and complete project details."
+            href="https://wa.me/917042080055/?text=Hi! ! I would like to know more about the Gaur Alaris  Sec 22 D project. Please share the latest price, available unit options, and complete project details."
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/40 transition-all text-xs font-sans font-semibold text-[#075E54]"
@@ -109,7 +109,7 @@ export default function Navbar() {
         {/* Mobile View Header Actions */}
         <div className="flex items-center gap-2 sm:hidden">
           <a
-            href="https://wa.me/917042080055/?text=Hi! 👋 I would like to know more about the Gaur Alaris  Sec 22 D project. Please share the latest price, available unit options, and complete project details."
+            href="https://wa.me/917042080055/?text=Hi! ! I would like to know more about the Gaur Alaris  Sec 22 D project. Please share the latest price, available unit options, and complete project details."
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#25D366]/15 border border-[#25D366]/40 text-[11px] font-sans font-semibold text-[#075E54]"
@@ -156,7 +156,7 @@ export default function Navbar() {
             </a>
 
             <a
-              href="https://wa.me/917042080055/?text=Hi! 👋 I would like to know more about the Gaur Alaris  Sec 22 D project. Please share the latest price, available unit options, and complete project details."
+              href="https://wa.me/917042080055/?text=Hi! ! I would like to know more about the Gaur Alaris  Sec 22 D project. Please share the latest price, available unit options, and complete project details."
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#25D366] text-white text-xs font-sans tracking-wide font-semibold shadow-md"
