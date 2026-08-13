@@ -60,7 +60,7 @@ export default function Hero() {
   };
 
   const whatsappMessage = encodeURIComponent(
-    "Hi! 👋 I would like to know more about the Gaur Alaris Sec 22 D project. Please share the latest price, available unit options, and complete project details."
+    "Hi! ! I would like to know more about the Gaur Alaris Sec 22 D project. Please share the latest price, available unit options, and complete project details."
   );
 
   return (
