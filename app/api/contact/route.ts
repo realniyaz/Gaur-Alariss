@@ -42,7 +42,7 @@ export async function POST(request: Request) {
             notes: `Lead Source: Gaur Alaris Landing Page. Typology / Plan: ${planType || "General Enquiry"}`,
             submittedDate: submittedDate,
             submittedTime: submittedTime,
-            subsource: "Website Direct",
+            subsource: "Google",
             leadStatus: "New",
           },
         ]),
