@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     const recipientEmail = process.env.LEAD_RECIPIENT_EMAIL || "realtyfmleads@gmail.com";
 
     const data = await resend.emails.send({
-      from: "Gaur Alaris Leads <sales@gauralariss.in>",
+      from: "Gaur Alaris Leads <onboarding@resend.dev>",
       to: [recipientEmail],
       subject: `New Lead: ${planType || "Cost Sheet / Enquiry"} - ${name}`,
       html: `
